@@ -114,7 +114,7 @@
       const cancelGeneration = () => {
         console.log("Canceling generation...");
         // Send request to /cancel
-        fetch("http://localhost:8080/api/cancel", {
+        fetch("http://localhost:8082/api/cancel", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -152,7 +152,7 @@
         const videoSubjectValue = videoSubject.value;
         const voiceValue = voice.value;
 
-        const url = "http://localhost:8080/api/generate";
+        const url = "http://localhost:8082/api/generate";
 
         // Construct data to be sent to the server
         const data = {
@@ -176,6 +176,7 @@
             // Hide cancel button after generation is complete
             generateButton.disabled = false;
             cancelButton.classList.add("hidden");
+            location.reload();
           })
           .catch((error) => {
             alert("An error occurred. Please try again later.");
