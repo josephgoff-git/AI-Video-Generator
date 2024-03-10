@@ -7,6 +7,7 @@ Automate the creation of YouTube Shorts locally, simply by providing a video top
 > **🎥** Watch the video on [YouTube](https://youtu.be/mkZsaDA2JnA?si=pNne3MnluRVkWQbE).
 
 ## Installation
+https://github.com/FujiwaraChoki/MoneyPrinter
 
 ```bash
 git clone https://github.com/FujiwaraChoki/MoneyPrinter.git

@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from moviepy.config import change_settings
 
+import openai
+
 # Load environment variables
 load_dotenv("../.env")
 
@@ -25,7 +27,7 @@ CORS(app)
 
 # Constants
 HOST = "0.0.0.0"
-PORT = 8080
+PORT = 8082
 AMOUNT_OF_STOCK_VIDEOS = 5
 GENERATING = False
 
@@ -33,6 +35,7 @@ GENERATING = False
 # Generation Endpoint
 @app.route("/api/generate", methods=["POST"])
 def generate():
+
     try:
         # Set global variable
         global GENERATING
@@ -58,18 +61,12 @@ def generate():
                 }
             )
 
-        # Generate a script
-        script = generate_script(data["videoSubject"])
-        voice = data["voice"]
-
-        if not voice:
-            print(colored("[!] No voice was selected. Defaulting to \"en_us_001\"", "yellow"))
-            voice = "en_us_001"
-
-        # Generate search terms
-        search_terms = get_search_terms(
-            data["videoSubject"], AMOUNT_OF_STOCK_VIDEOS, script
-        )
+        script = """
+        The majestic Rocky Mountains, stretching across North America, are a breathtaking sight to behold
+        With their towering peaks, stunning alpine lakes, and abundant wildlife, the Rockies offer unparalleled beauty and adventure
+        Whether you're a hiker, skier, or simply a nature lover, the Rocky Mountains are a must-visit destination that will leave you in awe of the wonders of the natural world."""
+        voice = "en_us_001"
+        search_terms = ["green mountains", "american mountains", "snow", "snowfall", "skiing"]
 
         # Search for a video of the given search term
         video_urls = []
@@ -129,39 +126,48 @@ def generate():
                 }
             )
 
-        # Split script into sentences
-        sentences = script.split(". ")
-        # Remove empty strings
-        sentences = list(filter(lambda x: x != "", sentences))
-        paths = []
-        # Generate TTS for every sentence
-        for sentence in sentences:
-            if not GENERATING:
-                return jsonify(
-                    {
-                        "status": "error",
-                        "message": "Video generation was cancelled.",
-                        "data": [],
-                    }
-                )
-            current_tts_path = f"../temp/{uuid4()}.mp3"
-            tts(sentence, voice, filename=current_tts_path)
-            audio_clip = AudioFileClip(current_tts_path)
-            paths.append(audio_clip)
+        # # Split script into sentences
+        # sentences = script.split(". ")
+        # # Remove empty strings
+        # sentences = list(filter(lambda x: x != "", sentences))
+        # paths = []
+        # # Generate TTS for every sentence
+        # for sentence in sentences:
+        #     if not GENERATING:
+        #         return jsonify(
+        #             {
+        #                 "status": "error",
+        #                 "message": "Video generation was cancelled.",
+        #                 "data": [],
+        #             }
+        #         )
+        #     current_tts_path = f"../temp/{uuid4()}.mp3"
+        #     tts(sentence, voice, filename=current_tts_path)
+        #     audio_clip = AudioFileClip(current_tts_path)
+        #     paths.append(audio_clip)
 
-        # Combine all TTS files using moviepy
-        final_audio = concatenate_audioclips(paths)
-        tts_path = f"../temp/{uuid4()}.mp3"
-        final_audio.write_audiofile(tts_path)
+        # # Combine all TTS files using moviepy
+        # final_audio = concatenate_audioclips(paths)
+        # tts_path = f"../temp/{uuid4()}.mp3"
+        # final_audio.write_audiofile(tts_path)
 
-        # Generate subtitles
-        subtitles_path = generate_subtitles(audio_path=tts_path, sentences=sentences, audio_clips=paths)
+        # # Generate subtitles
+        # subtitles_path = generate_subtitles(audio_path=tts_path, sentences=sentences, audio_clips=paths)
 
-        # Concatenate videos
-        temp_audio = AudioFileClip(tts_path)
-        combined_video_path = combine_videos(video_paths, temp_audio.duration)
+        # # Concatenate videos
+        # temp_audio = AudioFileClip(tts_path)
+
+        # combined_video_path = combine_videos(video_paths, temp_audio.duration)
+        combined_video_path = combine_videos(video_paths, 29.12)
+        print(combined_video_path)
 
         # Put everything together
+        print("Generating video...")
+        exit()
+
+
+
+
         final_video_path = generate_video(combined_video_path, tts_path, subtitles_path)
 
         # Let user know

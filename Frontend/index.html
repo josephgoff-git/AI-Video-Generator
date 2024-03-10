@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MoneyPrinter</title>
+    <title>AI Content Generator</title>
     <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💸</text></svg>"
@@ -15,24 +15,24 @@
     />
   </head>
 
-  <body class="bg-blue-100 min-h-screen justify-center p-40">
-    <h1 class="text-4xl text-center mb-4">MoneyPrinter</h1>
-    <p class="text-center text-gray-700">
-      This Application is intended to automate the creation of YouTube Shorts.
+  <body class="bg-black min-h-screen justify-center p-40">
+    <h1 class="text-4xl text-center mb-4 text-white">AI Content Generator</h1>
+    <p class="text-center text-white">
+      Create content for social media using AI! Enter a prompt and your video will complete within 2 minutes.
     </p>
 
     <div class="flex justify-center mt-8">
       <div class="flex flex-col space-y-4">
-        <label for="videoSubject" class="text-blue-600">Subject</label>
+        <div class="justify-center flex"><label for="videoSubject" class="text-white">Subject</label></div>
         <input
           type="text"
           name="videoSubject"
           id="videoSubject"
           class="border-2 border-blue-300 p-2 rounded-md focus:outline-none focus:border-blue-500"
         />
-        <label for="voice" class="text-blue-600">Voice</label>
+        <label for="voice" class="hidden text-blue-600">Voice</label>  
         <select name="voice" id="voice"
-          class="border-2 border-blue-300 p-2 rounded-md focus:outline-none focus:border-blue-500">
+          class="hidden border-2 border-blue-300 p-2 rounded-md focus:outline-none focus:border-blue-500">
           <option value="en_us_ghostface">Ghost Face</option>
           <option value="en_us_chewbacca">Chewbacca</option>
           <option value="en_us_c3po">C3PO</option>
@@ -90,7 +90,17 @@
       </div>
     </div>
 
-    <footer class="flex justify-center mt-8">
+    <!-- <div class="flex justify-center mt-8">
+      <video id="videoPlayer" controls autoplay style="max-height: 400px;">
+        <source src="http://localhost:8082/api/video" type="video/mp4">
+      </video>
+    </div> -->
+
+    <!-- <video controls>
+      <source src="/api/video" type="video/mp4">
+    </video> -->
+
+    <!-- <footer class="flex justify-center mt-8">
       <div class="flex flex-col space-y-4">
         <p class="text-center text-gray-700">
           Made with ❤️ by
@@ -103,13 +113,14 @@
           </a>
         </p>
       </div>
-    </footer>
+    </footer> -->
 
     <script>
       const videoSubject = document.querySelector("#videoSubject");
       const voice = document.querySelector("#voice");
       const generateButton = document.querySelector("#generateButton");
       const cancelButton = document.querySelector("#cancelButton");
+      const videoPlayer = document.querySelector("#videoPlayer");
 
       const cancelGeneration = () => {
         console.log("Canceling generation...");
@@ -138,6 +149,18 @@
         generateButton.disabled = false;
         generateButton.classList.remove("hidden");
       };
+
+      // const generateVideo2 = () => {
+      //   console.log("getting video")
+      //   fetch('http://localhost:8082/api/video')
+      //             .then(response => response.blob())
+      //             .then(blob => {
+      //                 const videoPlayer = document.getElementById('videoPlayer');
+      //                 videoPlayer.src = URL.createObjectURL(blob);
+      //                 generateButton.classList.remove("hidden");
+      //             })
+      //             .catch(error => console.error('Error:', error));
+      // }
 
       const generateVideo = () => {
         console.log("Generating video...");
@@ -172,11 +195,23 @@
           .then((response) => response.json())
           .then((data) => {
             console.log(data);
-            alert(data.message);
+            // alert(data.message);
             // Hide cancel button after generation is complete
             generateButton.disabled = false;
             cancelButton.classList.add("hidden");
-            location.reload();
+
+            var htmlToAdd = `
+              <div class="flex justify-center mt-8">
+                <video id="videoPlayer" controls autoplay style="max-height: 400px;">
+                  <source src="http://localhost:8082/api/video" type="video/mp4">
+                </video>
+              </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', htmlToAdd);
+            generateButton.classList.remove("hidden");
+            // location.reload();
+      
           })
           .catch((error) => {
             alert("An error occurred. Please try again later.");
